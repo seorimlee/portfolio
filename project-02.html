@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Monthly Playlist UI – Case Study</title> <!-- EDIT: 프로젝트 타이틀 -->
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Spoqa Han Sans Neo", "Inter", "Roboto", "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* ===== 전체 레이아웃 =====
+       PC: 좌우 50/50
+       모바일: 단일 컬럼
+    */
+    .case-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+
+    /* 모바일에서는 한 컬럼 */
+    @media (max-width: 768px) {
+      .case-wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ===== 왼쪽 텍스트 패널 ===== */
+    .info-panel {
+      position: relative;
+      background-color: #000;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      padding: 3rem 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* PC에서 info-panel 내용은 sticky로 고정 */
+    .info-inner {
+      position: sticky;
+      top: 0;
+      align-self: flex-start;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      max-width: 32rem;
+    }
+
+    /* 모바일에서는 sticky가 불필요하니까 자연 흐름으로 */
+    @media (max-width: 768px) {
+      .info-panel {
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        padding: 2rem 1.5rem 2rem;
+      }
+      .info-inner {
+        position: relative;
+        top: auto;
+        max-width: 100%;
+      }
+    }
+
+    .proj-headline {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+    }
+
+    .proj-title {
+      font-size: clamp(1.25rem, 0.5vw + 1rem, 1.5rem);
+      font-weight: 600;
+      line-height: 1.3;
+      color: #fff;
+    }
+
+    .proj-meta {
+      font-size: .8rem;
+      font-weight: 400;
+      line-height: 1.4;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .proj-desc-block {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .section-label {
+      font-size: .7rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .proj-desc {
+      font-size: .9rem;
+      color: #fff;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    .proj-role {
+      font-size: .9rem;
+      color: #fff;
+      line-height: 1.6;
+    }
+
+    .back-link {
+      font-size: .8rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.4;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .back-link:hover {
+      color: #fff;
+    }
+
+    /* ===== 오른쪽 이미지 스크롤 영역 ===== */
+    .image-panel {
+      position: relative;
+      background-color: #000;
+      overflow-x: hidden;
+      overflow-y: auto;
+      height: 100vh;
+      /* 부드러운 스크롤 느낌 */
+      scroll-behavior: smooth;
+    }
+
+    @media (max-width: 768px) {
+      .image-panel {
+        height: auto;
+        overflow-y: visible;
+      }
+    }
+
+    .image-stack {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .shot-block {
+      width: 100%;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .shot-block {
+        padding: 1.5rem;
+      }
+    }
+
+    .shot-img-wrap {
+      width: 100%;
+      background-color: #111;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: .5rem;
+      overflow: hidden;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .shot-img-wrap img {
+      display: block;
+      width: 100%;
+      height: auto;
+      vertical-align: middle;
+    }
+
+    .shot-caption {
+      font-size: .75rem;
+      line-height: 1.4;
+      font-weight: 400;
+      color: rgba(255,255,255,0.6);
+      text-align: left;
+      max-width: 1200px;
+      margin: .75rem auto 0;
+    }
+
+    /* 좀 더 큰 화면에서 이미지 영역에만 스크롤바 보이도록 */
+    /* (브라우저 기본 스크롤 그대로 쓸 거라 커스텀은 최소화) */
+  </style>
+</head>
+<body>
+
+  <main class="case-wrap">
+
+    <!-- 왼쪽: 프로젝트 정보 -->
+    <aside class="info-panel">
+      <div class="info-inner">
+        <a class="back-link" href="index.html">← All Projects</a> <!-- EDIT: 메인 그리드 페이지 경로 -->
+
+        <header class="proj-headline">
+          <h1 class="proj-title">Dadgetool Website Design/Develop</h1> <!-- EDIT -->
+          <div class="proj-meta">
+            2025 07-08 · Web Publishing, Frontend Develop<br/>
+            Role: 국내 신생 브랜드 "Dadgetool" 웹사이트 개발. cafe24 기반.<br/>
+            사이트 링크 : <a href="https://dadgetool.io/" style="text-decoration: underline">https://dadgetool.io/</a>
+          </div>
+        </header>
+
+        <section class="proj-desc-block">
+          <div>
+            <div class="section-label">About</div>
+            <p class="proj-desc">
+              기본적인 컨셉과 디자인 소스, 레이아웃 배치 등의 디자인 요소는 figma를 통해 클라이언트 측에서 제공.
+              <br>Dadgetool에서 요청하는 효과와 기능을 구현하여 사이트 제작
+              <br>상품 구매단에서 발생하는 account 내 세부 페이지는 브랜드 컨셉에 맞춰 디자인. 
+              <br>제작 소요시간 약 2달.
+              <!-- EDIT -->
+            </p>
+          </div>
+
+          <div>
+            <div class="section-label">Contribution</div>
+            <p class="proj-role">
+              - 페이지 첫 진입시 타이핑 효과 intro<br/>
+              - 현재 진행 컬렉션 타이포를 index 페이지에 무작위 배치 -> 클릭 및 드래깅으로 자유로운 이동
+              - 상품 목록에서 상품명 타이핑 효과 및 효과에 따른 오디오<br/>
+              - 상품 품절시 타이포 반전 효과<br/>
+              - 사용자의 니즈에 맞게 상품 크기 배열 조절 기능 적용
+              <!-- EDIT -->
+            </p>
+          </div>
+        </section>
+      </div>
+    </aside>
+
+    <!-- 오른쪽: 이미지 스크롤 영역 -->
+    <section class="image-panel">
+      <div class="image-stack">
+
+        <!-- shot 1 -->
+        <article class="shot-block" id="shot-4">
+          <div class="shot-img-wrap">
+            <img src="project02/1.png" alt="Playlist UI Overview" />
+          </div>
+          <p class="shot-caption">
+            페이지 진입시, 각 컬렉션 이미지를 미리 확인할 수 있는 타이포 띄움. (랜덤 배치) 클릭 시 썸네일. 마우스나 터치로 이동 및 사이즈 조절 가능. 클릭 시 해당 컬렉션 전체 이미지 확인 가능.
+            <!-- EDIT -->
+          </p>
+        </article> 
+
+        <!-- shot 2 -->
+        <article class="shot-block" id="shot-2">
+          <div class="shot-img-wrap">
+            <img src="project02/2.png" alt="Playlist UI Overview" />
+          </div>
+          <p class="shot-caption">
+            상품 목록에서 좌측 하단 버튼을 통해 1열 당 노출 개수 조절 가능
+            <!-- EDIT -->
+          </p>
+        </article>
+
+        <!-- shot 3 -->
+        <article class="shot-block" id="shot-3">
+          <div class="shot-img-wrap">
+            <img src="project02/3.png" alt="Playlist UI Overview" />
+          </div>
+          <p class="shot-caption">
+            토글을 통해 상품 디테일과 사이즈가이드, 배송정보 확인 가능. 슬라이드로 이미지 전환
+            <!-- EDIT -->
+          </p>
+        </article>
+
+        <!-- shot 4 -->
+        <article class="shot-block" id="shot-4">
+          <div class="shot-img-wrap">
+            <img src="project02/4.png" alt="Playlist UI Overview" />
+          </div>
+          <p class="shot-caption">
+            장바구니 담을 시, 우측 화면에 창 띄움. 하단 checkout에 타이핑 효과
+            <!-- EDIT -->
+          </p>
+        </article>
+          
+        <article class="shot-block" id="shot-4">
+          <div class="shot-img-wrap">
+            <img src="project02/5.png" alt="Playlist UI Overview" />
+          </div>
+          <p class="shot-caption">
+            account 영역 주소록 관리, 주문 내역 등의 상세페이지 디자인.
+            <!-- EDIT -->
+          </p>
+        </article>
+          
+        <article class="shot-block" id="shot-4">
+          <div class="shot-img-wrap" style="display: flex;">
+            <img style="width: 50%;" src="project02/6.png" alt="Playlist UI Overview" />
+            <img style="width: 50%;" src="project02/7.png" alt="Playlist UI Overview" />  
+          </div>
+          <p class="shot-caption">
+            PC와 내용 동일. 모바일
+            <!-- EDIT -->
+          </p>
+        </article>  
+          
+        <article class="shot-block" id="shot-4">
+          <div class="shot-img-wrap" style="display: flex;">
+            <img style="width: 50%;" src="project02/8.png" alt="Playlist UI Overview" />
+            <img style="width: 50%;" src="project02/9.png" alt="Playlist UI Overview" />  
+          </div>
+          <p class="shot-caption">
+            햄버거바를 통해 카테고리 이동. 모바일
+            <!-- EDIT -->
+          </p>
+        </article>
+          
+          
+        <article class="shot-block" id="shot-4">
+          <div class="shot-img-wrap" style="display: flex;">
+            <img style="width: 50%;" src="project02/10.png" alt="Playlist UI Overview" />
+            <img style="width: 50%;" src="project02/11.png" alt="Playlist UI Overview" />  
+          </div>
+          <p class="shot-caption">
+            PC와 내용 동일. 모바일
+            <!-- EDIT -->
+          </p>
+        </article>
+          
+        
+
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>
