@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Portfolio Grid</title>
+  <style>
+    /* 리셋 & 기본 설정 */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Spoqa Han Sans Neo", "Inter", "Roboto", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    /* 전체 래퍼: 뷰포트 가로를 항상 가득 채움 */
+    .portfolio-grid {
+      display: grid;
+      width: 100vw;
+      min-height: 100vh;
+      /* 기본은 3열 (<=1920까지) */
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* 1920 초과일 때 4열 */
+    @media (min-width: 1921px) {
+      .portfolio-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    /* 모바일에서는 2열 */
+    @media (max-width: 768px) {
+      .portfolio-grid {
+        grid-template-columns: repeat(1, 1fr);
+      }
+    }
+
+    /* 각 타일 공통 스타일 */
+    .tile {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 4; /* 3:4 비율 유지 */
+      background-color: #111;
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* 프로필(첫번째 타일) 전용 스타일 */
+    .tile.profile {
+      background-color: #fff;
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 2rem;
+      text-align: left;
+      align-items: flex-start;
+      justify-content: flex-start;
+      line-height: 1.5;
+      font-size: clamp(0.8rem, 0.4vw + 0.6rem, 1rem);
+    }
+
+    .profile-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .profile-block h1 {
+      font-size: clamp(1rem, 0.6vw + 0.8rem, 1.25rem);
+      font-weight: 600;
+      line-height: 1.3;
+      color: #000;
+      margin-bottom: 0.25rem;
+    }
+
+    .profile-block .subline {
+      font-size: 0.9em;
+      font-weight: 400;
+      color: rgba(0,0,0,0.6);
+    }
+
+    .profile-section-title {
+      font-size: 0.7em;
+      font-weight: 500;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,0.4);
+      margin-bottom: 0.4rem;
+    }
+
+    .profile-list {
+      font-size: 0.9em;
+      color: #000;
+    }
+
+    .profile-list div + div {
+      margin-top: 0.3rem;
+    }
+
+    /* 이미지 / 썸네일용 타일 스타일 */
+    .tile.project {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      cursor: pointer;
+    }
+
+    /* 호버 효과 (원하면 향후 조정 가능) */
+    .tile.project::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.25);
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+    .tile.project:hover::after {
+      opacity: 1;
+    }
+
+    /* 프로젝트 타이틀 라벨 */
+    .project-label {
+      position: absolute;
+      left: 1rem;
+      bottom: 1rem;
+      color: #000;
+      font-size: clamp(0.7rem, 0.4vw + 0.5rem, 0.8rem);
+      line-height: 1.4;
+      font-weight: 500;
+      padding: 3px 8px;
+      background: #fff;
+    }
+
+    .project-label .name {
+      font-weight: 600;
+      color: #000;
+    }
+
+    .project-label .year {
+      color: rgba(255,255,255,0.6);
+      font-weight: 400;
+      margin-left: .5em;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="portfolio-grid">
+
+    <!-- 첫번째 타일: 명함 / 자기소개 (링크 없음) -->
+    <section class="tile profile">
+      <div class="profile-inner">
+        <div class="profile-block">
+          <h1>이서림 LEE SEORIM</h1>
+          <div class="subline">1999 · Seoul / Digital Content, Front-End, Commerce UX</div>
+        </div>
+
+        <div>
+          <div class="profile-section-title">Skills</div>
+          <div class="profile-list">
+            <div>HTML / CSS / JavaScript (ES6+)</div>
+            <div>Responsive Web / Café24 커스터마이징</div>
+            <div>UI Copywriting · Brand Voice</div>
+            <div>2D Graphic Design poster, Motion banner</div>
+            <div>SNS Marketing / Branding</div>
+          </div>
+        </div>  
+
+        <div>
+          <div class="profile-section-title">Contact</div>
+          <div class="profile-list">
+            <div>Mail · tjfla253@gmail.com</div>
+              <div>Instagram · @24rim2</div>
+            <div>Phone · +82-10-8867-8322</div>
+          </div>
+        </div>
+          
+        <div>
+          <div class="profile-section-title">Education/Experience</div>
+          <div class="profile-list">
+            <div style="color:#ccc; font-size: 0.8em;">2023.3 8DIVISION / AMD 부서 입사</div>
+            <div style="color:#ccc; font-size: 0.8em;">24.09–25.11 온라인팀 매니저</div>
+            <div style="color:#ccc; font-size: 0.8em;">2018.3-2023.2 홍익대학교 세종캠퍼스 디자인컨버젼스 학부 학사</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 두번째 이후 타일: a태그로 상세 페이지 이동 -->
+    <a class="tile project"
+       href="project-02.html"
+       style="background-image:url('/Users/seorim/Desktop/portfolio-worksout/pr2.png');">
+      <div class="project-label">
+        <div><span class="name">Dadgetool Website Design/Develop</span><span class="year">2025</span></div>
+        <div>Café24 · HTML · CSS · JS</div>
+      </div>
+    </a>
+      
+    <a class="tile project"
+       href="project-01.html"
+       style="background-image:url('/Users/seorim/Desktop/portfolio-worksout/pr1.png');">
+      <div class="project-label">
+        <div><span class="name">8DIVISION Promotion Banner Archive</span><span class="year">2024-2025</span></div>
+        <div>Graphic Design · Motion · Web</div>
+      </div>
+    </a>
+
+    <a class="tile project"
+       href="project-03.html"
+       style="background-image:url('/Users/seorim/Desktop/portfolio-worksout/pr3.png');">
+      <div class="project-label">
+        <div><span class="name">8DIVISION Brand Voice / Editorial</span><span class="year">2023-25</span></div>
+        <div>Interaction · Copywriting · Bilingual Tone</div>
+      </div>
+    </a>
+
+    <a class="tile project"
+       href="project-04.html"
+       style="background-image:url('/Users/seorim/Desktop/portfolio-worksout/pr4.png');">
+      <div class="project-label">
+        <div><span class="name">Portfolio Website - Actress KIM YAEEUN</span><span class="year">2024</span></div>
+        <div>HTML · CSS · JS</div>
+      </div>
+    </a>
+      
+    <a class="tile project"
+       href="project-05.html"
+       style="background-image:url('/Users/seorim/Desktop/portfolio-worksout/pr5.png');">
+      <div class="project-label">
+        <div><span class="name">Portfolio Website - Photographer LEE EUNJEE</span><span class="year">2025</span></div>
+        <div>HTML · CSS · JS</div>
+      </div>
+    </a>
+
+  </main>
+
+</body>
+</html>

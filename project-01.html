@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Monthly Playlist UI – Case Study</title> <!-- EDIT: 프로젝트 타이틀 -->
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Spoqa Han Sans Neo", "Inter", "Roboto", "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* ===== 전체 레이아웃 =====
+       PC: 좌우 50/50
+       모바일: 단일 컬럼
+    */
+    .case-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+
+    /* 모바일에서는 한 컬럼 */
+    @media (max-width: 768px) {
+      .case-wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ===== 왼쪽 텍스트 패널 ===== */
+    .info-panel {
+      position: relative;
+      background-color: #000;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      padding: 3rem 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* PC에서 info-panel 내용은 sticky로 고정 */
+    .info-inner {
+      position: sticky;
+      top: 0;
+      align-self: flex-start;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      max-width: 32rem;
+    }
+
+    /* 모바일에서는 sticky가 불필요하니까 자연 흐름으로 */
+    @media (max-width: 768px) {
+      .info-panel {
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        padding: 2rem 1.5rem 2rem;
+      }
+      .info-inner {
+        position: relative;
+        top: auto;
+        max-width: 100%;
+      }
+    }
+
+    .proj-headline {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+    }
+
+    .proj-title {
+      font-size: clamp(1.25rem, 0.5vw + 1rem, 1.5rem);
+      font-weight: 600;
+      line-height: 1.3;
+      color: #fff;
+    }
+
+    .proj-meta {
+      font-size: .8rem;
+      font-weight: 400;
+      line-height: 1.4;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .proj-desc-block {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .section-label {
+      font-size: .7rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .proj-desc {
+      font-size: .9rem;
+      color: #fff;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    .proj-role {
+      font-size: .9rem;
+      color: #fff;
+      line-height: 1.6;
+    }
+
+    .back-link {
+      font-size: .8rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.4;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .back-link:hover {
+      color: #fff;
+    }
+
+    /* ===== 오른쪽 이미지 스크롤 영역 ===== */
+    .image-panel {
+      position: relative;
+      background-color: #000;
+      overflow-x: hidden;
+      overflow-y: auto;
+      height: 100vh;
+      /* 부드러운 스크롤 느낌 */
+      scroll-behavior: smooth;
+    }
+
+    @media (max-width: 768px) {
+      .image-panel {
+        height: auto;
+        overflow-y: visible;
+      }
+    }
+
+    .image-stack {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .shot-block {
+      width: 100%;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .shot-block {
+        padding: 1.5rem;
+      }
+    }
+
+    .shot-img-wrap {
+      width: 100%;
+      background-color: #111;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: .5rem;
+      overflow: hidden;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .shot-img-wrap img {
+      display: block;
+      width: 100%;
+      height: auto;
+      vertical-align: middle;
+    }
+
+    .shot-caption {
+      font-size: .75rem;
+      line-height: 1.4;
+      font-weight: 400;
+      color: rgba(255,255,255,0.6);
+      text-align: left;
+      max-width: 1200px;
+      margin: .75rem auto 0;
+    }
+
+    /* 좀 더 큰 화면에서 이미지 영역에만 스크롤바 보이도록 */
+    /* (브라우저 기본 스크롤 그대로 쓸 거라 커스텀은 최소화) */
+  </style>
+</head>
+<body>
+
+  <main class="case-wrap">
+
+    <!-- 왼쪽: 프로젝트 정보 -->
+    <aside class="info-panel">
+      <div class="info-inner">
+        <a class="back-link" href="index.html">← All Projects</a> <!-- EDIT: 메인 그리드 페이지 경로 -->
+
+        <header class="proj-headline">
+          <h1 class="proj-title">Promotion Banner Design</h1> <!-- EDIT -->
+          <div class="proj-meta">
+            2024-2025 · Promotion Web Banner<br/>
+            Role: Banner Design, 링크 페이지 카피라이팅, 타이머 설정
+          </div>
+        </header>
+
+        <section class="proj-desc-block">
+          <div>
+            <div class="section-label">About</div>
+            <p class="proj-desc">
+              8DIVISION에서 진행하는 할인코드 및 시즌오프 프로모션 하이라이트를 위한 배너 디자인 진행. 
+              각 프로모션의 컨셉에 맞는, 트렌드에 부합하는 디자인 설정 및 적용.
+              <!-- EDIT -->
+            </p>
+          </div>
+
+          <div>
+            <div class="section-label">Contribution</div>
+            <p class="proj-role">
+              - Photoshop, Aftereffect 등을 활용한 배너 디자인<br/>
+              - 배너 클릭 시, 진입 카테고리 내부 카피라이팅 및 타이머 설정<br/>
+              - Café24 환경에서의 반응형 테스트
+              <!-- EDIT -->
+            </p>
+          </div>
+        </section>
+      </div>
+    </aside>
+
+    <!-- 오른쪽: 이미지 스크롤 영역 -->
+    <section class="image-panel">
+      <div class="image-stack">
+
+        <!-- shot 1 -->
+        <article class="shot-block" id="shot-4">
+          <div class="shot-img-wrap">
+            <img src="project01/8.gif" alt="Playlist UI Overview" />
+          </div>
+          <p class="shot-caption">
+            큰 할인율 폭과 재고소진시의 특성을 활용해 질리지 않도록 컬러를 최소화하고 재미 요소를 더함. After Effect 사용. 24SS 시즌오프. 
+            <!-- EDIT -->
+          </p>
+        </article> 
+
+        <!-- shot 2 -->
+        <article class="shot-block" id="shot-2">
+          <div class="shot-img-wrap">
+            <img src="project01/2.gif" alt="Playlist UI Overview" />
+          </div>
+          <p class="shot-caption">
+            타이핑 효과를 활용한 디자인. 25년 7월 할인코드 25SUMMER. 
+            <!-- EDIT -->
+          </p>
+        </article>
+
+        <!-- shot 3 -->
+        <article class="shot-block" id="shot-3">
+          <div class="shot-img-wrap">
+            <img src="project01/3.gif" alt="Playlist UI Overview" />
+          </div>
+          <p class="shot-caption">
+            GOODBYE라는 할인코드 컨셉을 활용. After Effect 사용. 25년 8월 할인코드 GOODBYESUMMER.
+            <!-- EDIT -->
+          </p>
+        </article>
+
+        <!-- shot 4 -->
+        <article class="shot-block" id="shot-4">
+          <div class="shot-img-wrap">
+            <img src="project01/4.gif" alt="Playlist UI Overview" />
+          </div>
+          <p class="shot-caption">
+            위와 동일하게 FLASH라는 키워드 활용. Premiere Pro 사용. 25년 3월 할인코드 FLASH25.
+            <!-- EDIT -->
+          </p>
+        </article>
+          
+        <article class="shot-block" id="shot-4">
+          <div class="shot-img-wrap">
+            <img src="project01/5.gif" alt="Playlist UI Overview" />
+          </div>
+          <p class="shot-caption">
+            벚꽃이 떨어지는 모습을 형상화. Premiere Pro 사용. 25년 3월 할인코드 BLOSSOM25.
+            <!-- EDIT -->
+          </p>
+        </article>
+          
+        <article class="shot-block" id="shot-4">
+          <div class="shot-img-wrap">
+            <img src="project01/7.jpg" alt="Playlist UI Overview" />
+          </div>
+          <p class="shot-caption">
+            밸런타인 컨셉에 맞는 컬러감과 텍스처를 활용한 디자인. 25년 2월 할인코드 SWEET25.
+            <!-- EDIT -->
+          </p>
+        </article>  
+          
+        <article class="shot-block" id="shot-4">
+          <div class="shot-img-wrap">
+            <img src="project01/9.gif" alt="Playlist UI Overview" />
+          </div>
+          <p class="shot-caption">
+            픽셀 변환 효과를 활용한 디자인. 25년 9월 할인코드 CHUSEOK25
+            <!-- EDIT -->
+          </p>
+        </article> 
+          
+        <article class="shot-block" id="shot-4">
+          <div class="shot-img-wrap">
+            <img src="project01/10.gif" alt="Playlist UI Overview" />
+          </div>
+          <p class="shot-caption">
+            PRIVATE 키워드의 뉘앙스를 해석. 타이포의 배치 변화. 25년 5월 할인코드 PRIVATE25.
+            <!-- EDIT -->
+          </p>
+        </article>
+          
+        <article class="shot-block" id="shot-4">
+          <div class="shot-img-wrap">
+            <img src="project01/11.gif" alt="Playlist UI Overview" />
+          </div>
+          <p class="shot-caption">
+            당시 인기가 많았던 시즌오프 적용 브랜드 라인업을 활용. 24년 미드시즌오프 배너.
+            <!-- EDIT -->
+          </p>
+        </article>
+          
+        
+
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>
